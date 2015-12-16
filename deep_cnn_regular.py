@@ -35,23 +35,35 @@ def DNN(data, input_shape, label_class):
     #config
 
     #init
+
+    print (input_shape)
+
     print("Begin build model..")
     model = Sequential()
-    nb_samples, sentence_len, input_dim = data.shape
-    print (data.shape)
 
-    model.add( LSTM(output_dim = 300, activation='sigmoid', input_dim=300))
+    #First layers
+    model.add(Convolution2D( nb_filter = 27, nb_row = 3, nb_col = 1,
+        border_mode = 'valid', activation = 'relu', 
+        input_shape=(input_shape[0],input_shape[1],input_shape[2])
+        ))
+    model.add(Convolution2D( nb_filter = 2048, nb_row = 3, nb_col = 300,
+        border_mode = 'valid', activation = 'relu'
+        ))
+
+    #pooling layer
+    model.add(MaxPooling2D( pool_size=(21,1) ))
+
+    #Fully Connected Layer with dropout
+    model.add(Flatten())
+    model.add(Dense(output_dim = 256, activation = 'relu'))
+    model.add(Dropout(0.5))
 
     #Fully Connected Layer as output layer
-    model.add(Dropout(0.5))
-    model.add( Dense(output_dim=label_class) )
-    model.add(Activation("softmax"))
-    #model.add(Dropout(0.5))
-
+    model.add( Dense(output_dim = label_class,W_regularizer=l2(0.01)) )
+    model.add( Activation('softmax') )
 
     adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
-    model.compile(loss='mean_absolute_error', 
-            class_mode = 'binary',
+    model.compile(loss='mean_absolute_error', class_mode = 'binary',
             optimizer = adadelta)
 
     return model
@@ -65,14 +77,14 @@ if __name__ == "__main__":
     seed = np.random.randint(0,1000)
     print (seed)
     #seed = 1337
-    batch_size = 16
-    nb_epoch = 10
+    batch_size = 32
+    nb_epoch = 25
     all_num = 10
     valid_rate = 0.9
-    path = './log/%s-dnn_log_test'%(time.strftime("%m-%d_%H-%M"))
+    path = '../log/%s-'%(time.strftime("%m-%d_%H-%M"))
 
     input_shape, w2v_dim, label_class, data, label = load_data(path
-            =sys.argv[1],filter_h =5, model_type = "RNN");
+            =sys.argv[1],filter_h =5, model_type = "CNN");
     #label need to change
     label = np_utils.to_categorical(label, label_class)
 
@@ -107,7 +119,7 @@ if __name__ == "__main__":
             verbose = 1
             )
 
-        write_pre_loss(hist, path, i, nb_epoch,seed)
+        write_pre_loss(hist, path, i, nb_epoch, seed)
         #count avg pre need to do
         """
         pre, recall =pre_recall_count(test_label, predict_label,label_class)

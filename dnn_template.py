@@ -37,8 +37,8 @@ def DNN(data, input_shape, label_class):
     #init
     print("Begin build model..")
     model = Sequential()
-    nb_samples, sentence_len, input_dim = data.shape
-    print (data.shape)
+
+    print (input_shape)
 
     model.add( LSTM(output_dim = 300, input_dim=300))
 

@@ -45,14 +45,14 @@ def DNN(data, input_shape, label_class):
     #Fully Connected Layer as output layer
     model.add(Dropout(0.5))
     model.add( Dense(output_dim=label_class, W_regularizer=l2(0.01)) )
-    model.add(Activation("softmax"))
+    model.add(Activation("sigmoid"))
     #model.add(Dropout(0.5))
 
 
-    #adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
+    adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='mean_absolute_error', 
             class_mode = 'binary',
-            optimizer = 'rmsprop')
+            optimizer = adadelta)
 
     return model
 
