@@ -27,6 +27,7 @@ from keras.layers.recurrent import LSTM, GRU
 from keras.utils.np_utils import accuracy
 from keras.utils import np_utils, generic_utils
 from process_data import load_data, write_pre_loss
+from keras.regularizers import l2
 
 #model here
 def DNN(data, input_shape, label_class):
@@ -66,11 +67,12 @@ def DNN(data, input_shape, label_class):
     model.add(Merge(sub_models, mode='concat'))
 
     #Fully Connected Layer with dropout
-
     model.add(Flatten())
-    model.add( Dense(output_dim=label_class, activation='softmax'))
     model.add(Dropout(0.5))
+    model.add( Dense(output_dim=label_class, W_regularizer=l2(0.01)))
+    model.add(Activation('softmax'))
 
+    #complie
     adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='binary_crossentropy', class_mode = 'binary',optimizer=adadelta)
 

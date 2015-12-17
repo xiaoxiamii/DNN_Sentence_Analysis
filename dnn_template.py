@@ -70,6 +70,7 @@ if __name__ == "__main__":
     all_num = 10
     valid_rate = 0.9
     path = '../log/%s-dnn_log_test'%(time.strftime("%m-%d_%H-%M"))
+    print (path)
 
     input_shape, w2v_dim, label_class, data, label = load_data(path
             =sys.argv[1],filter_h =5, model_type = "RNN");

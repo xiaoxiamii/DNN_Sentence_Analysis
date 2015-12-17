@@ -45,14 +45,14 @@ def DNN(data, input_shape, label_class):
     #Fully Connected Layer as output layer
     model.add(Dropout(0.5))
     model.add( Dense(output_dim=label_class) )
-    model.add(Activation("softmax"))
+    model.add(Activation("sigmoid"))
     #model.add(Dropout(0.5))
 
 
     adadelta = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='mean_absolute_error', 
             class_mode = 'binary',
-            optimizer = adadelta)
+            optimizer = 'adam')
 
     return model
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     nb_epoch = 10
     all_num = 10
     valid_rate = 0.9
-    path = './log/%s-dnn_log_test'%(time.strftime("%m-%d_%H-%M"))
+    path = '../log/%s-lstm-test-'%(time.strftime("%m-%d_%H-%M"))
 
     input_shape, w2v_dim, label_class, data, label = load_data(path
             =sys.argv[1],filter_h =5, model_type = "RNN");
